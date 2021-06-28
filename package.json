@@ -1,7 +1,7 @@
 {
   "name": "@netlify/open-api",
   "description": "Netlify's open-api definition as a module",
-  "version": "2.2.0",
+  "version": "2.5.0",
   "author": "Netlify",
   "ava": {
     "files": [
@@ -50,7 +50,6 @@
   },
   "scripts": {
     "prepublishOnly": "npm ci && npm test",
-    "prepare": "run-s test",
     "test": "run-s lint build unit",
     "start": "run-s lint build",
     "build": "run-s convert redoc",

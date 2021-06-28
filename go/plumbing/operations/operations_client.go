@@ -119,6 +119,8 @@ type ClientService interface {
 
 	GetIndividualDNSRecord(params *GetIndividualDNSRecordParams, authInfo runtime.ClientAuthInfoWriter) (*GetIndividualDNSRecordOK, error)
 
+	GetLatestPluginRuns(params *GetLatestPluginRunsParams, authInfo runtime.ClientAuthInfoWriter) (*GetLatestPluginRunsOK, error)
+
 	GetServices(params *GetServicesParams, authInfo runtime.ClientAuthInfoWriter) (*GetServicesOK, error)
 
 	GetSite(params *GetSiteParams, authInfo runtime.ClientAuthInfoWriter) (*GetSiteOK, error)
@@ -216,6 +218,8 @@ type ClientService interface {
 	UpdateAccount(params *UpdateAccountParams, authInfo runtime.ClientAuthInfoWriter) (*UpdateAccountOK, error)
 
 	UpdateHook(params *UpdateHookParams, authInfo runtime.ClientAuthInfoWriter) (*UpdateHookOK, error)
+
+	UpdatePlugin(params *UpdatePluginParams, authInfo runtime.ClientAuthInfoWriter) (*UpdatePluginOK, error)
 
 	UpdateServiceInstance(params *UpdateServiceInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*UpdateServiceInstanceNoContent, error)
 
@@ -1808,6 +1812,40 @@ func (a *Client) GetIndividualDNSRecord(params *GetIndividualDNSRecordParams, au
 }
 
 /*
+  GetLatestPluginRuns This is an internal-only endpoint.
+*/
+func (a *Client) GetLatestPluginRuns(params *GetLatestPluginRunsParams, authInfo runtime.ClientAuthInfoWriter) (*GetLatestPluginRunsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetLatestPluginRunsParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "getLatestPluginRuns",
+		Method:             "GET",
+		PathPattern:        "/sites/{site_id}/plugin_runs/latest",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetLatestPluginRunsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetLatestPluginRunsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetLatestPluginRunsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
   GetServices get services API
 */
 func (a *Client) GetServices(params *GetServicesParams, authInfo runtime.ClientAuthInfoWriter) (*GetServicesOK, error) {
@@ -3110,7 +3148,7 @@ func (a *Client) RollbackSiteDeploy(params *RollbackSiteDeployParams, authInfo r
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
 		ID:                 "rollbackSiteDeploy",
-		Method:             "POST",
+		Method:             "PUT",
 		PathPattern:        "/sites/{site_id}/rollback",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
@@ -3476,6 +3514,40 @@ func (a *Client) UpdateHook(params *UpdateHookParams, authInfo runtime.ClientAut
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*UpdateHookDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+  UpdatePlugin This is an internal-only endpoint.
+*/
+func (a *Client) UpdatePlugin(params *UpdatePluginParams, authInfo runtime.ClientAuthInfoWriter) (*UpdatePluginOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdatePluginParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "updatePlugin",
+		Method:             "PUT",
+		PathPattern:        "/sites/{site_id}/plugins/{package}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdatePluginReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdatePluginOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdatePluginDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

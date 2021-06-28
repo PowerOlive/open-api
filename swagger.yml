@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 2.2.0
+  version: 2.5.0
   title: Netlify's API documentation
   description: >-
     Netlify is a hosting service for the programmable web. It understands your
@@ -713,6 +713,12 @@ paths:
     post:
       operationId: createSiteBuild
       tags: [build]
+      parameters:
+        - name: build
+          in: body
+          schema:
+            $ref: '#/definitions/buildSetup'
+          required: false
       responses:
         '200':
           description: OK
@@ -868,7 +874,7 @@ paths:
         type: string
         in: path
         required: true
-    post:
+    put:
       operationId: rollbackSiteDeploy
       tags: [deploy]
       responses:
@@ -987,6 +993,59 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/function'
+        default:
+          $ref: '#/responses/error'
+  /sites/{site_id}/plugins/{package}:
+    put:
+      operationId: updatePlugin
+      tags: [x-internal]
+      description: 'This is an internal-only endpoint.'
+      parameters:
+        - name: site_id
+          type: string
+          in: path
+          required: true
+        - name: package
+          type: string
+          in: path
+          required: true
+        - name: plugin_params
+          in: body
+          schema:
+            $ref: '#/definitions/pluginParams'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/plugin'
+        default:
+          $ref: '#/responses/error'
+  /sites/{site_id}/plugin_runs/latest:
+    get:
+      operationId: getLatestPluginRuns
+      tags: [x-internal]
+      description: 'This is an internal-only endpoint.'
+      parameters:
+        - name: site_id
+          in: path
+          type: string
+          required: true
+        - name: packages
+          in: query
+          type: array
+          items:
+            type: string
+          required: true
+        - name: state
+          in: query
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/pluginRun'
         default:
           $ref: '#/responses/error'
   /deploys/{deploy_id}/plugin_runs:
@@ -2377,6 +2436,18 @@ definitions:
         type: string
       framework:
         type: string
+  pluginParams:
+    type: object
+    properties:
+      pinned_version:
+        type: string
+  plugin:
+    type: object
+    properties:
+      package:
+        type: string
+      pinned_version:
+        type: string
   buildStatus:
     type: object
     properties:
@@ -2860,6 +2931,11 @@ definitions:
         type: boolean
       minify:
         type: boolean
+  buildSetup:
+    type: object
+    properties:
+      image:
+        type: string
   buildHookSetup:
     type: object
     properties:
